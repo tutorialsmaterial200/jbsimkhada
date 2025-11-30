@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: ramdip-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - ramdip-network
+
+  mongodb:
+    image: mongo:7.0
+    container_name: ramdip-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=ramdip
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    restart: unless-stopped
+    networks:
+      - ramdip-network
+
+volumes:
+  mongodb_data:
+  mongodb_config:
+
+networks:
+  ramdip-network:
+    driver: bridge
